@@ -1,0 +1,70 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: The following template is used to deploy an EKS cluster into an existing VPC. 
+
+Parameters:
+  EKSIAMRoleName:
+    Type: String
+    Description: The name of the IAM role for the EKS service to assume.
+    Default: MyEKSClusterIAMRole
+
+  EKSClusterName:
+    Type: String
+    Description: The desired name of your AWS EKS Cluster.
+    Default: MyEKSCluster
+
+  PublicSubnetAz1S1ID:
+    Description: Set Public Subnet ID - Primary Availability Zone
+    Type: String
+
+  PublicSubnetAz2S1ID:
+    Description: Set Public Subnet ID - Secondary Availability Zone
+    Type: String
+
+  PrivateSubnetAz1S1ID:
+    Description: Set Private Subnet ID - Primary Availability Zone
+    Type: String
+
+  PrivateSubnetAz2S1ID:
+    Description: Set Private Subnet ID - Secondary Availability Zone
+    Type: String
+
+  ControlPlaneSecurityGroupID:
+    Description: Set Security Group ID used by EKS cluster nodes
+    Type: String
+
+Resources:
+  EKSIAMRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - "eks.amazonaws.com"
+            Action:
+              - 'sts:AssumeRole'
+      RoleName: !Ref EKSIAMRoleName
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonEKSClusterPolicy
+        - arn:aws:iam::aws:policy/AmazonEKSServicePolicy
+
+  EKSCluster:
+    Type: AWS::EKS::Cluster
+    Properties:
+      Name: !Ref EKSClusterName
+      RoleArn: !GetAtt [ "EKSIAMRole", "Arn" ]
+      ResourcesVpcConfig:
+        SecurityGroupIds:
+          - !Ref ControlPlaneSecurityGroupID
+        SubnetIds:
+          - !Ref PublicSubnetAz1S1ID
+          - !Ref PublicSubnetAz2S1ID
+          - !Ref PrivateSubnetAz1S1ID
+          - !Ref PrivateSubnetAz2S1ID
+
+Outputs:
+  EKSClusterName:
+    Description: EKS cluster created
+    Value: !Ref EKSCluster
