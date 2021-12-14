@@ -23,6 +23,13 @@
             - Select "File" in the upper menu and select "Open Folder". Browse and select the cloned Repository folder (C:\Users\[USERNAME]\Documents\MyLocalRepos\PlanADevOpsChallenge2)
             - Make sure all files found in  https://github.com/Gdcorbijn/PlanADevOpsChallenge2 where cloned into your directory.
 
+# IMPORTANT NOTE:
+    - Make sure to run the Cloud Formation Templates in the order as the appear in this document:
+        1- DeployBaseNetwork.yml
+        2- DeployEKSCluster.yml
+        3- DeployEKSClusterNodes.yml
+    - There are dependencies between templates that, if the order is not respected, will cause errors on execution.
+
 # Steps to run DeployBaseNetwork.yml Cloud Formation Template:
 
             1- Login to your active AWS Account with you root user. Navigate to: https://aws.amazon.com/account/ and click on "Sign In" option on the upper menu. Check the selected Region is "Ohio" in the upper right menu option, otherwise, click on the Region name and select "Ohio" from the displayed regions list. 
